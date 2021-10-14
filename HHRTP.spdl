@@ -1,0 +1,84 @@
+usertype String;
+const FLIP:Function;
+const XOR:Function;
+const ROT:Function;
+const CON:Function;
+const ADD:Function;
+const QUA:Function;
+const ENC:Function;
+const MUL:Function;
+const M:Function;
+macro A=QUA(CON(GKold,r1),n);
+macro B=XOR(GKold,r1);
+macro C=ADD(GKold,share);
+macro D=QUA(CON(CON(pp,qq),GKold),n);
+macro F=XOR(r2,GKold);
+macro E=ENC(sump,key);
+macro nn=MUL(pp,qq);
+macro G=ENC(ROT(ROT(nn,r2)),key);
+macro H=ROT(CON(r2,nn),r3);
+macro S1=QUA(CON(CON(GKnew,r2),r4),nn);
+macro S2=ROT(XOR(r4,GKnew),r2);
+macro S3=XOR(r4,M(pid));
+macro S4=XOR(share,r4);
+macro S5=XOR(r5,GKnew);
+macro S6=ROT(XOR(r5,GKnew),r4);
+protocol HHRTP(Rn,Ro,T){
+	role Ro{
+		secret GKold,n,sump,share,key;
+		fresh r1,r2,r3,pp,qq;
+		send_1(Ro,T,A,B);
+		recv_2(T,Ro,C);
+		send_3(Ro,T,D,F);
+		send_4(Ro,Rn,E,G,H);
+		claim(Ro,Secret,GKold);
+		claim(Ro,Secret,r1);
+		claim(Ro,Secret,r2);
+		claim(Ro,Secret,r3);
+		claim(Ro,Secret,pp);
+		claim(Ro,Secret,qq);
+		claim(Ro,Alive);
+		claim(Ro,Weakagree);
+		claim(Ro,Nisynch);
+		claim(Ro,Niagree);
+	}
+	role Rn{
+		secret GKnew,key,sump;
+		secret pp,qq;
+		fresh r2,r3,r4,r5;
+		fresh pid,share;
+		recv_4(Ro,Rn,E,G,H);
+		send_5(Rn,T,S1,S2);
+		recv_6(T,Rn,S3,S4);
+		send_7(Rn,T,S5,S6);
+		claim(Rn,Secret,GKnew);
+		claim(Rn,Secret,r2);
+		claim(Rn,Secret,r4);
+		claim(Rn,Secret,r5);
+		claim(Rn,Alive);
+		claim(Rn,Weakagree);
+		claim(Rn,Nisynch);
+		claim(Rn,Niagree);
+	}
+	role T{
+		secret GKold,GKnew,n;
+		secret pp,qq,pid,share;
+		fresh r1,r2,r4,r5;
+		recv_1(Ro,T,A,B);
+		send_2(T,Ro,C);
+		recv_3(Ro,T,D,F);
+		recv_5(Rn,T,S1,S2);
+		send_6(T,Rn,S3,S4);
+		recv_7(Rn,T,S5,S6);
+		claim(T,Secret,GKold);
+		claim(T,Secret,GKnew);
+		claim(T,Secret,r1);
+		claim(T,Secret,r2);
+		claim(T,Secret,r4);
+		claim(T,Secret,r5);
+		claim(T,Alive);
+		claim(T,Weakagree);
+		claim(T,Nisynch);
+		claim(T,Niagree);
+	}
+}
